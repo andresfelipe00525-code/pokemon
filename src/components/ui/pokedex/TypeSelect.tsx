@@ -1,10 +1,11 @@
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setType } from '../store/slices/filtersSlice';
-import { useGetTypesQuery } from '../services/pokemon.api';
-
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import type { RootState } from '../../../store/hooks'; // <--- Intenta esta línea separada (solo si el anterior falla)
+import { setType } from '../../../store/slices/filters.slice';
+import { useGetTypesQuery } from '../../../services/pokemon.api';
 const TypeSelect = () => {
 	const dispatch = useAppDispatch();
-	const type = useAppSelector((s) => s.filters.type);
+
+	const type = useAppSelector((s: RootState) => s.filters.type);
 
 	const { data, isLoading } = useGetTypesQuery();
 
@@ -15,17 +16,16 @@ const TypeSelect = () => {
 			</label>
 			<select
 				value={type}
-				onChange={(e) => dispatch(setType(e.target.value))}
+				onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+					dispatch(setType(e.target.value))
+				}
 				className="p-2 border-4 border-blue-500 rounded-lg shadow-inner bg-yellow-100 text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200 w-full sm:w-auto"
 			>
-				{/* Option to view all Pokémon, using 'allPokemons' value */}
 				<option value="allPokemons">All Pokémon</option>
 
-				{/* Loading state option */}
 				{isLoading && <option disabled>Loading...</option>}
 
-				{/* Map API results to options */}
-				{data?.results.map((t) => (
+				{data?.results.map((t: { name: string; url: string }) => (
 					<option key={t.url} value={t.url}>
 						{t.name}
 					</option>
